@@ -1,0 +1,7 @@
+<nav class="navbar">
+  <div class="nav-links">
+    <a routerLink="/race-list">Available races</a>
+    <a routerLink="/application-list" *ngIf="isApplicant">My Applications</a>
+  </div>
+  <button class="logout-btn" (click)="logout()">Logout</button>
+</nav>

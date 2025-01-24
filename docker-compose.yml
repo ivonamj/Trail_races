@@ -1,0 +1,96 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: trail_races
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d trail_races"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+  messaging:
+    image: rabbitmq:3-management
+    container_name: messaging
+    ports:
+      - "15672:15672"  # Management UI
+      - "5672:5672"    # AMQP
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+
+  command-service:
+    build:
+      context: ./commandservice
+      dockerfile: Dockerfile
+    container_name: commandservice
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/trail_races
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: password
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      JWT_SECRET: eW91ci0yNTYtYml0LXNlY3JldC15b3VyLTI1Ni1iaXQtc2VjcmV0
+      JWT_EXPIRATION: 86400000
+      SPRING_RABBITMQ_HOST: messaging
+      SPRING_RABBITMQ_PORT: 5672
+    ports:
+      - "8081:8081"
+    depends_on:
+      messaging:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  query-service:
+    build:
+      context: ./queryservice
+      dockerfile: Dockerfile
+    container_name: queryservice
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/trail_races
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: password
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      JWT_SECRET: eW91ci0yNTYtYml0LXNlY3JldC15b3VyLTI1Ni1iaXQtc2VjcmV0
+      JWT_EXPIRATION: 86400000
+      SPRING_RABBITMQ_HOST: messaging
+      SPRING_RABBITMQ_PORT: 5672
+    ports:
+      - "8082:8082"
+    depends_on:
+      messaging:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  client-application:
+    image: client-application-image
+    build: ./client-application
+    ports:
+      - "4200:80"
+    depends_on:
+      - command-service
+      - query-service
+
+volumes:
+  postgres_data:
+
+networks:
+  app-network:

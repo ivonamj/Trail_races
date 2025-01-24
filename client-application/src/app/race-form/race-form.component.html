@@ -1,0 +1,55 @@
+<div class="form-container">
+  <h2>{{ isUpdateMode ? 'Update Race' : 'Create New Race' }}</h2>
+  <form (ngSubmit)="saveRace()" #raceForm="ngForm">
+    
+    <div class="form-group">
+      <label for="name">Race Name</label>
+      <input
+        id="name"
+        [(ngModel)]="race.name"
+        name="name"
+        required
+        #name="ngModel"
+        class="form-control"
+      />
+      <div *ngIf="name.invalid && name.touched" class="error">
+        Race name is required.
+      </div>
+      <div *ngIf="submissionErrors.name" class="error">
+        {{ submissionErrors.name }}
+      </div>
+    </div>
+    
+    <div class="form-group">
+      <label for="distance">Distance</label>
+      <select
+        id="distance"
+        [(ngModel)]="race.distance"
+        name="distance"
+        required
+        #distance="ngModel"
+        class="form-control"
+      >
+        <option [ngValue]="null" disabled selected>Select Distance</option>
+        <option value="FIVE_K">5k</option>
+        <option value="TEN_K">10k</option>
+        <option value="HALFMARATHON">Half Marathon</option>
+        <option value="MARATHON">Marathon</option>
+      </select>
+      <div *ngIf="distance.invalid && distance.touched" class="error">
+        Distance is required.
+      </div>
+      <div *ngIf="submissionErrors.distance" class="error">
+        {{ submissionErrors.distance }}
+      </div>
+    </div>
+    
+    <div *ngIf="submissionErrors.message" class="error">
+      {{ submissionErrors.message }}
+    </div>
+    
+    <button type="submit" [disabled]="raceForm.invalid">
+      {{ isUpdateMode ? 'Update Race' : 'Create Race' }}
+    </button>
+  </form>
+</div>

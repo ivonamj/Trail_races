@@ -1,0 +1,56 @@
+<div class="form-container">
+  <h2>Apply to Race</h2>
+  <form (ngSubmit)="apply()" #applicationForm="ngForm">
+
+    <div class="form-group">
+      <label for="firstName">First Name</label>
+      <input
+        id="firstName"
+        [(ngModel)]="application.firstName"
+        name="firstName"
+        required
+        #firstName="ngModel"
+        class="form-control"
+      />
+      <div *ngIf="firstName.invalid && firstName.touched" class="error">
+        First name is required.
+      </div>
+      <div *ngIf="submissionErrors.firstName" class="error">
+        {{ submissionErrors.firstName }}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="lastName">Last Name</label>
+      <input
+        id="lastName"
+        [(ngModel)]="application.lastName"
+        name="lastName"
+        required
+        #lastName="ngModel"
+        class="form-control"
+      />
+      <div *ngIf="lastName.invalid && lastName.touched" class="error">
+        Last name is required.
+      </div>
+      <div *ngIf="submissionErrors.lastName" class="error">
+        {{ submissionErrors.lastName }}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="club">Club (Optional)</label>
+      <input
+        id="club"
+        [(ngModel)]="application.club"
+        name="club"
+        class="form-control"
+      />
+      <div *ngIf="submissionErrors.club" class="error">
+        {{ submissionErrors.club }}
+      </div>
+    </div>
+
+    <button type="submit" [disabled]="applicationForm.invalid">Submit Application</button>
+  </form>
+</div>

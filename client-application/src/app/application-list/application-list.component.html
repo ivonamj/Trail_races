@@ -1,0 +1,9 @@
+<div class="application-list">
+  <h1>My Applications</h1>
+  <ul>
+    <li *ngFor="let app of applications">
+      <span>{{ app.firstName }} {{ app.lastName }} {{ app.club }} - Race: {{ getRaceName(app.raceId) }}</span>
+      <button (click)="deleteApplication(app.id)">Delete</button>
+    </li>
+  </ul>
+</div>

@@ -1,0 +1,25 @@
+<div class="race-list">
+  <h1>Available Races</h1>
+  <ul>
+    <li *ngFor="let race of races" class="race-item">
+      <span class="race-name">{{ race.name }} ({{ race.distance }})</span>
+      
+      <div class="action-container">
+        <ng-container *ngIf="isApplicant">
+          <ng-container *ngIf="appliedRaceIds.includes(race.id); else applyButton">
+            <span>You already applied</span>
+          </ng-container>
+          <ng-template #applyButton>
+            <button routerLink="/application-form/{{ race.id }}">Apply</button>
+          </ng-template>
+        </ng-container>
+
+        <ng-container *ngIf="isAdministrator">
+          <button class="delete-btn" (click)="deleteRace(race.id)">Delete</button>
+          <button (click)="navigateToEditRace(race.id)">Edit</button>
+        </ng-container>
+      </div>
+    </li>
+  </ul>
+  <button *ngIf="isAdministrator" routerLink="/race-form">Add New Race</button>
+</div>
